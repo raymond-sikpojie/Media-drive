@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const User = require("../models/User");
 
+// create new user
 router.post("/", async (req, res) => {
   let { name, userName, email, password } = req.body;
 
@@ -71,7 +72,7 @@ router.get("/all", async (req, res) => {
   try {
     const users = await User.find();
     if (!users) {
-      return res.status(400).send({ msg: "Users not found" });
+      return res.status(400).send({ msg: "No users available" });
     }
     res.status(200).send(users);
   } catch (error) {
