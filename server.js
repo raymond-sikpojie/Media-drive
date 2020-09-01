@@ -10,7 +10,7 @@ connectDB();
 
 // define routes
 app.use("/user", require("./routes/user"));
-
+app.use("/user", require("./routes/upload"));
 // Heroku config. Serve static assets in production
 // if (process.env.NODE_ENV === "production") {
 //   // set static folder
