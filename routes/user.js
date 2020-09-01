@@ -6,14 +6,12 @@ require("dotenv").config();
 const User = require("../models/User");
 
 // create new user
-router.post("/", async (req, res) => {
-  let { name, userName, email, password } = req.body;
+router.post("/register", async (req, res) => {
+  let { firstName, lastName, email, password } = req.body;
 
   try {
-    if (!name || !email || !password) {
+    if (!firstName || !lastName || !email || !password) {
       return res.status(400).send("Please fill in all required fields");
-    } else if (!userName) {
-      userName = name;
     }
 
     // check if the user already exists
@@ -26,7 +24,12 @@ router.post("/", async (req, res) => {
     const encryptedPassword = await bcrypt.hash(password, 10);
 
     // Create a user
-    user = new User({ name, userName, email, password: encryptedPassword });
+    user = new User({
+      firstName,
+      lastName,
+      email,
+      password: encryptedPassword,
+    });
 
     await user.save();
 
@@ -41,19 +44,19 @@ router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
     if (!email || !password) {
-      return res.status(400).send("Insert email and password");
+      return res.status(400).send({ msg: "Invalid Credentials" });
     }
 
     let user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).send("Invalid Credentials");
+      return res.status(400).send({ msg: "Invalid Credentials" });
     }
 
     // check password
     const checkPassword = await bcrypt.compare(password, user.password);
 
     if (!checkPassword) {
-      return res.status(400).send("Invalid Credentials");
+      return res.status(400).send({ msg: "Invalid Credentials" });
     }
 
     // Create token
@@ -61,7 +64,7 @@ router.post("/login", async (req, res) => {
       expiresIn: "24h",
     });
 
-    res.status(200).send({ msg: "User logged in", user, token });
+    res.status(200).send({ msg: "Authentication successful", user, token });
   } catch (error) {
     res.status(500).send(error.message);
   }
